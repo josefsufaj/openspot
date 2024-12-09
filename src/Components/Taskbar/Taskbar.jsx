@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faMap, faHeart, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faMap, faCar, faUser } from "@fortawesome/free-solid-svg-icons";
 import "./Taskbar.css";
 
 const Taskbar = ({onMenuChange}) => {
@@ -17,7 +17,7 @@ const Taskbar = ({onMenuChange}) => {
                 </button>
 
                 <button className={"taskbar-item"} onClick={() => onMenuChange("Spots")}>
-                    <FontAwesomeIcon icon={faHeart} size="lg"/>
+                    <FontAwesomeIcon icon={faCar} size="lg"/>
                     <span>Spots</span>
                 </button>
 
