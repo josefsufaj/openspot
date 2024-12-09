@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import MarkerForm from "../MarkerForm/MarkerForm";
-
+import SpotForm from "../SpotForm/SpotForm";
+import './Map.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -18,150 +18,121 @@ L.Marker.prototype.options.icon = L.icon({
     shadowSize: [41, 41],
 });
 
-const MapComponent = () => {
+const Map = ({ spots, addSpot, updateSpot, removeSpot }) => {
     const defaultPosition = [43.466667, -80.516670];
-    const [markers, setMarkers] = useState([]);
-    const [editingMarker, setEditingMarker] = useState(null);
-    const [newMarker, setNewMarker] = useState(null);
-    const newMarkerRef = useRef(null);
+    const [newSpot, setNewSpot] = useState(null);
+    const [editingSpotId, setEditingSpotId] = useState(null); // keeping track of the spot being edited
 
-    const AddMarker = () => {
+    const newSpotRef = useRef(null);
+
+    const AddSpot = () => {
         useMapEvents({
             click: (e) => {
-                if (editingMarker || newMarker) return; // prevent adding markers while editing
+                if (newSpot) return;
                 const { lat, lng } = e.latlng;
-                const marker = {
+                const spot = {
                     id: Date.now(),
                     position: [lat, lng],
-                    name: '',
-                    description: '',
+                    name: "",
+                    description: "",
                     photo: null,
                 };
-                setMarkers((prevMarkers) => [...prevMarkers, marker]);
-                setNewMarker(marker); // set new marker is being created
-                setEditingMarker(marker.id);
+                addSpot(spot);
+                setNewSpot(spot);
+                setEditingSpotId(spot.id);
             },
         });
         return null;
     };
 
-    const saveNewMarker = (updatedDetails) => {
-        setMarkers((prevMarkers) =>
-            prevMarkers.map((marker) =>
-                marker.id === newMarker.id ? { ...marker, ...updatedDetails } : marker
-            )
-        );
-        setNewMarker(null); // Clear new marker state
-        setEditingMarker(null);
+    const saveSpot = (updatedDetails) => {
+        updateSpot(editingSpotId, updatedDetails);
+        setNewSpot(null);
+        setEditingSpotId(null);
     };
 
-    const cancelNewMarker = () => {
-        setMarkers((prevMarkers) =>
-            prevMarkers.filter((marker) => marker.id !== newMarker.id)
-        );
-        setNewMarker(null);
-        setEditingMarker(null);
-    };
-
-    const removeMarker = (id) => {
-        setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker.id !== id));
-        if (editingMarker === id) setEditingMarker(null);
-    };
-
-    const editMarker = (id, updatedDetails) => {
-        setMarkers((prevMarkers) =>
-            prevMarkers.map((marker) => (marker.id === id ? { ...marker, ...updatedDetails } : marker))
-        );
-        setEditingMarker(null);
+    const cancelNewSpot = () => {
+        removeSpot(newSpot?.id);
+        setNewSpot(null);
+        setEditingSpotId(null);
     };
 
     const toggleEdit = (id) => {
-        setEditingMarker((prevId) => (prevId === id ? null : id));
+        setEditingSpotId((prevId) => (prevId === id ? null : id));
     };
 
     return (
-        <div style={{ height: '100vh', width: '100%' }}>
-            <MapContainer
-                center={defaultPosition}
-                zoom={10}
-                style={{ height: '100%', width: '100%' }}
-            >
+        <div style={{ height: "100vh", width: "100%" }}>
+            <MapContainer center={defaultPosition} zoom={10} style={{ height: "100%", width: "100%" }}>
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                     attribution='&copy; <a href="https://www.carto.com/attributions">CARTO</a>'
                 />
 
-                {markers.map((marker) => (
-                    <Marker key={marker.id}
-                            position={marker.position}
-                            ref={(ref) => {
-                                if (marker.id === newMarker?.id) {
-                                    newMarkerRef.current = ref;
-                                    setTimeout(() => {
-                                        if (ref) ref.openPopup();
-                                    }, 0); // popup will immediately open when available
-                                }
-                            }}
+                {spots.map((spot) => (
+                    <Marker
+                        key={spot.id}
+                        position={spot.position}
+                        ref={(ref) => {
+                            if (spot.id === newSpot?.id) {
+                                newSpotRef.current = ref;
+                                setTimeout(() => {
+                                    if (ref) ref.openPopup();
+                                }, 0);
+                            }
+                        }}
                     >
                         <Popup>
-                            {newMarker ? (
+                            {editingSpotId === spot.id ? (
                                 <div onClick={(e) => e.stopPropagation()}>
-                                    <h3>Create New Spot</h3>
-
-                                    <MarkerForm
-                                        marker={newMarker}
-                                        onSave={saveNewMarker}
-                                        onCancel={cancelNewMarker}
+                                    <SpotForm
+                                        marker={spot}
+                                        onSave={(updatedDetails) => saveSpot(updatedDetails)}
+                                        onCancel={cancelNewSpot}
                                     />
                                 </div>
                             ) : (
-                                <div onClick={(e) => e.stopPropagation()}>
-                                    {editingMarker === marker.id ? (
-                                        // render form if editing
-                                        <MarkerForm
-                                            marker={marker}
-                                            onSave={(updatedDetails) => editMarker(marker.id, updatedDetails)}
+                                <div className={'spot-info'} onClick={(e) => e.stopPropagation()}>
+                                    <h2>{spot.name || "Unnamed Spot"}</h2>
+                                    {spot.photo && (
+                                        <img
+                                            src={spot.photo}
+                                            alt="Spot"
+                                            style={{
+                                                width: "200px",
+                                                height: "200px",
+                                            }}
                                         />
-                                    ) : (
-                                        // render details if not editing
-                                        <>
-                                            <h2>{marker.name}</h2>
-                                            {marker.photo && (
-                                                <img
-                                                    src={marker.photo}
-                                                    alt="Spot"
-                                                    style={{
-                                                        width: '200px',
-                                                        height: '200px',
-                                                    }}
-                                                />
-                                            )}
-                                            <p>{marker.description}</p>
-                                            <button
-                                                onClick={() => toggleEdit(marker.id)}
-                                                style={{padding: '5px', cursor: 'pointer', marginRight: '5px'}}
-                                            >
-                                                {editingMarker === marker.id ? 'Stop Editing' : 'Edit'}
-                                            </button>
-                                            <button
-                                                onClick={() => removeMarker(marker.id)}
-                                                style={{padding: '5px', cursor: 'pointer'}}
-                                            >
-                                                Remove
-                                            </button>
-                                        </>
                                     )}
+                                    <p>{spot.description || "No description provided."}</p>
+                                    <p>${spot.price} / night</p>
+                                    <div className={'form-actions'}>
+                                        <button
+                                            onClick={() => toggleEdit(spot.id)}
+                                            style={{padding: "5px", cursor: "pointer", marginRight: "5px"}}
+                                            className={'cancel-button'}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => removeSpot(spot.id)}
+                                            style={{padding: "5px", cursor: "pointer"}}
+                                            className={'save-button'}
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+
                                 </div>
                             )}
-
                         </Popup>
                     </Marker>
                 ))}
 
-                <AddMarker/>
+                <AddSpot/>
             </MapContainer>
         </div>
     );
 };
 
-export default MapComponent;
+export default Map;
