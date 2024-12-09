@@ -1,0 +1,85 @@
+.spot-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #222;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    padding: 20px;
+    border-radius: 10px;
+    color: #ccc;
+    width: 100%;
+    min-width: 325px;
+    max-width: 325px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.spot-form h3 {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group textarea {
+    background: #333;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: none;
+    height: 80px;
+}
+
+.photo-preview {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid #444;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.save-button, .cancel-button {
+    background: #444;
+    color: #ccc;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1;
+    margin: 0 5px;
+    text-align: center;
+    transition: background 0.2s;
+}
+
+.save-button:hover {
+    background: #66cc66;
+}
+
+.cancel-button:hover {
+    background: #cc6666;
+}

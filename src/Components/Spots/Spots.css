@@ -1,0 +1,64 @@
+.spots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background-color: #111;
+    color: #ccc;
+    min-height: 100vh;
+}
+
+.spot-card {
+    background: #222;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.spot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+.spot-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.spot-details {
+    padding: 15px;
+}
+
+.spot-name {
+    font-size: 18px;
+    color: #fff;
+    margin: 0 0 10px;
+}
+
+.spot-location {
+    font-size: 14px;
+    color: #aaa;
+    margin: 0 0 5px;
+}
+
+.spot-price {
+    font-size: 14px;
+    color: #ff6600;
+    margin: 0 0 5px;
+}
+
+.spot-status {
+    font-size: 12px;
+    color: #66ff66;
+}
+
+.no-spots-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 16px;
+    color: #aaa;
+}
